@@ -1,7 +1,12 @@
 #ifndef _PLATFORM_H_
 #define _PLATFORM_H_
 
-int createWindow(const char* title, int wWidth, int wHeight);
+int getWidth(void);
+int getHeight(void);
+void setWidth(int width);
+void setHeight(int hidth);
+
+int createWindow(const char* title, int width, int height);
 void setBackgroundColor(float red, float green, float blue);
 int isClosed(void);
 void clearScreen(void);
