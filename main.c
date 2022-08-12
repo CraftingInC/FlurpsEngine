@@ -11,6 +11,7 @@ int main(void)
         while (isClosed())
         {
             clearScreen();
+            processInput();
 
             // Logic here
 
