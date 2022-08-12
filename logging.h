@@ -1,5 +1,5 @@
 
-/*  EXAMPLE : log("INFO : Hello there!"); */
+/*  EXAMPLE : logs("INFO : Hello there!"); */
 
 #ifndef LOGGING_H
 #define LOGGING_H
@@ -11,7 +11,7 @@
 #include <time.h>    // time()   localtime()   tzset()   strftime()
 #include <errno.h>   // errno
 
-#define log(...) _log(__VA_ARGS__)
+#define logs(...) _log(__VA_ARGS__)
 
 void _log(const char* fmt, ...);
 

@@ -1,10 +1,18 @@
 
 #include "flurpscore.h"
-#include "logging.h"
-#include <glad/glad.h>
+#include "ogl.h"
 #include <GLFW/glfw3.h>
 
+#include "logging.h"
 #include <stdlib.h>  // malloc()   free()
+
+struct _RECT         // TODO : Verify if this is where this belongs
+{
+    int x, y;
+    int width, height;
+};
+
+struct _RECT* RECT;
 
 struct _WINDOW
 {
@@ -29,9 +37,9 @@ struct _WINDOW* win;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
     win->width = width;
     win->height = height;
+    setGLViewport(win->width, win->height);
     clearScreen();
     updateWindow();
 }
@@ -187,7 +195,7 @@ void processInput()
 
 int createWindow(const char* title, int width, int height)
 {
-    log("INFO : Initializing GLFW3 and Creating Window ...");
+    logs("INFO : Initializing GLFW3 and Creating Window ...");
     if (!glfwInit())
         return -1;
 
@@ -199,22 +207,21 @@ int createWindow(const char* title, int width, int height)
     win->window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (!win->window)
     {
-        glfwTerminate();
+        closeWindow();
         return -1;
     }
 
-    log("INFO : Window Created.");
+    logs("INFO : Window Created.");
 
     glfwMakeContextCurrent(win->window);
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-	    log("ERROR : Failed to initialize OpenGL context !");
-        glfwTerminate();
+    if(!initGLAD())
+    {
+	    logs("ERROR : Failed to initialize OpenGL context !");
+        closeWindow();
         return -1;
 	}
 
-	log("INFO : GLAD --> OpenGL Working.");
-	log("INFO : OpenGL Version : %s", glGetString(GL_VERSION));
+	showGLLoggingVersion();
 
 	glfwSetFramebufferSizeCallback(win->window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(win->window, mouse_callback);
@@ -224,19 +231,9 @@ int createWindow(const char* title, int width, int height)
 	return 1;
 }
 
-void setBackgroundColor(float red, float green, float blue)
-{
-    glClearColor(red, green, blue, 1.0f);
-}
-
 int isClosed()
 {
     return !glfwWindowShouldClose(win->window);
-}
-
-void clearScreen()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void updateWindow()
@@ -249,5 +246,5 @@ void closeWindow()
 {
     if(win){free(win);};
     glfwTerminate();
-    log("INFO : Program terminated successfully.");
+    logs("INFO : Program terminated successfully.");
 }
