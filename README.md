@@ -1,7 +1,6 @@
 # Flurps Engine written in C from scratch.
   
-TOTAL TIMES THIS REPO HAS BEEN DOWNLOAD  
-[![Github Repo Download](https://img.shields.io/github/repos/CraftingInC/FlurpsEngine/traffic/clones)]()
+https://api.github.com/repos/CraftingInC/FlurpsEngine/traffic/clones
   
   
  
