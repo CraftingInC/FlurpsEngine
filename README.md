@@ -1,7 +1,7 @@
 # Flurps Engine written in C from scratch.
   
 TOTAL TIMES THIS REPO HAS BEEN DOWNLOAD  
-[![Github All Releases](https://img.shields.io/github/downloads/CraftingInC/FlurpsEngine/total.svg)]()
+[![Github All Releases](https://img.shields.io/github/downloads/CraftingInC/FlurpsEngine/latest/total.svg)]()
   
   
  
