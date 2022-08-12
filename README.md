@@ -1,5 +1,10 @@
 # Flurps Engine written in C from scratch.
   
+TOTAL TIMES THIS REPO HAS BEEN DOWNLOAD  
+[![Github All Releases](https://img.shields.io/github/downloads/CraftingInC/FlurpsEngine/total.svg)]()
+  
+  
+ 
 This setup at this time is for Windows builds. But will add Linux builds later.  
   
 Currently only proven to work on Windows 10.  
