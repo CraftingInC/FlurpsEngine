@@ -1,9 +1,5 @@
 # Flurps Engine written in C from scratch.
   
-https://api.github.com/repos/CraftingInC/FlurpsEngine/traffic/clones
-  
-  
- 
 This setup at this time is for Windows builds. But will add Linux builds later.  
   
 Currently only proven to work on Windows 10.  
