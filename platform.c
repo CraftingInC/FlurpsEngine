@@ -66,7 +66,7 @@ void setMouseMovedFalse()
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
     MOUSESTATS.xpos = (int)(xposIn);
-    MOUSESTATS.ypos = (int)(yposIn);
+    MOUSESTATS.ypos = (int)(-yposIn + win->height);
 
     MOUSESTATS.mouseMoved = 1;
 }
@@ -159,7 +159,7 @@ void processInput() // TODO : Put this function into the correct spot for the fl
 
     if(isMouseMoved() && MOUSESTATS.isLeftMouseDown)
     {
-      //  wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
+        wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
     }
 
     if(MOUSESTATS.isLeftMouseDown)
