@@ -10,7 +10,6 @@ int main(void)
         while (isClosed())
         {
             processInput();
-            clearScreen();
 
             // Game Logic here
 
@@ -18,7 +17,6 @@ int main(void)
         }
         closeWindow();
         return 0;
-    } else {
-        return -2;
     }
+    return -1;
 }

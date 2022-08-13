@@ -5,5 +5,6 @@
 
 int initGLAD(void);
 void setGLViewport(int width, int height);
+void checkCompileErrors(unsigned int shader);
 
 #endif // _OGL_H_

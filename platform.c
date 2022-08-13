@@ -6,6 +6,14 @@
 #include "logging.h"
 #include <stdlib.h>  // malloc()   free()
 
+ // Although these are local, they might need to put into their own struct.
+unsigned int programID;
+unsigned int VAO;
+int uresolution;
+int utime;
+int umouse;
+double timer;
+
 struct _RECT         // TODO : Verify if this is where this belongs
 {
     int x, y;
@@ -40,7 +48,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     win->width = width;
     win->height = height;
     setGLViewport(win->width, win->height);
-    clearScreen();
     updateWindow();
 }
 
@@ -200,11 +207,14 @@ int createWindow(const char* title, int width, int height)
         return -1;
 
     win = malloc(sizeof(struct _WINDOW));
+    win->width = width;
+    win->height = height;
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    win->window = glfwCreateWindow(width, height, title, NULL, NULL);
+    win->window = glfwCreateWindow(win->width, win->height, title, NULL, NULL);
     if (!win->window)
     {
         closeWindow();
@@ -228,6 +238,32 @@ int createWindow(const char* title, int width, int height)
 	glfwSetMouseButtonCallback(win->window, mouse_button_callback);
 	glfwSetScrollCallback(win->window, scroll_callback);
 
+	programID = initMainShaders();
+	if(programID == 0)
+    {
+	    logs("ERROR : Failed to initialize shaders !");
+        closeWindow();
+        return -1;
+    }
+
+    if(VAO) // FIX THIS LATER
+    {
+        glDeleteVertexArrays(1, &VAO);
+        ShaderCleanUp(programID);
+    }
+
+    glGenVertexArrays(1, &VAO); // Wrong spot for the GL stuff
+    glBindVertexArray(VAO);
+
+    uresolution = glGetUniformLocation(programID, "iResolution");
+    utime = glGetUniformLocation(programID, "iTime");
+    umouse = glGetUniformLocation(programID, "iMouse");
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glfwSwapBuffers(win->window);
+    timer = glfwGetTime();
+    glfwSwapInterval(1);
+
 	return 1;
 }
 
@@ -238,12 +274,19 @@ int isClosed()
 
 void updateWindow()
 {
+    useShader(programID);
+    glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
+    timer = glfwGetTime();
+    glUniform1f(utime, timer);
+    glUniform4f(umouse, MOUSESTATS.xpos, MOUSESTATS.ypos, MOUSESTATS.isLeftMouseDown, MOUSESTATS.isMiddleMouseDown);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glfwSwapBuffers(win->window);
     glfwPollEvents();
 }
 
 void closeWindow()
 {
+    if(programID > 0){ShaderCleanUp(programID); logs("INFO : Shader cleaned up successfully.");}
     if(win){free(win);};
     glfwTerminate();
     logs("INFO : Program terminated successfully.");

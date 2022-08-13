@@ -9,6 +9,12 @@ void setBackgroundColor(float red, float green, float blue);
 void showGLLoggingVersion(void);
 void clearScreen(void);
 
+// TODO : Find a better place for shaders.
+unsigned int initMainShaders();
+void useShader(unsigned int programID);
+int loadShaderFromFile(const char* fileName, int shaderType);
+void ShaderCleanUp(unsigned int programID);
+
 int getWidth(void);
 int getHeight(void);
 void setWidth(int width);
