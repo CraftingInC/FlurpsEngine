@@ -17,9 +17,8 @@ unsigned int initMainShaders()
     "}\n";
 
     // Eventually this shader will be a solid color for the background.
-    // Using this also speeds up the framerates since we are not using glClear.
+    // Using this also speeds up the frame rates since we are not using glClear.
     const char *fragmentBackgroundShaderSource = "#version 450 core\n"
-    "precision highp float;\n"
     "#define fragCoord gl_FragCoord.xy\n"
     "out vec4 fragColor;\n"
     "uniform vec2 iResolution;\n"

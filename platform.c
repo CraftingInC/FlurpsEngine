@@ -6,7 +6,7 @@
 #include "logging.h"
 #include <stdlib.h>  // malloc()   free()
 
- // Although these are local, they might need to put into their own struct.
+ // Although these are local, they will need to be put into their own struct.
 unsigned int programID;
 unsigned int VAO;
 int uresolution;
@@ -45,10 +45,12 @@ struct _WINDOW* win;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    glfwSwapInterval(0);
     win->width = width;
     win->height = height;
     setGLViewport(win->width, win->height);
     updateWindow();
+    glfwSwapInterval(1);
 }
 
 int isMouseMoved()
@@ -148,7 +150,7 @@ void setHeight(int height)
     win->height = height;
 }
 
-void processInput()
+void processInput() // TODO : Put this function into the correct spot for the flurpscore.h
 {
     if(glfwGetKey(win->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
@@ -157,35 +159,41 @@ void processInput()
 
     if(isMouseMoved() && MOUSESTATS.isLeftMouseDown)
     {
-        wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
+      //  wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
     }
 
     if(MOUSESTATS.isLeftMouseDown)
     {
-        wprintf(L"LEFT BUTTON DOWN\n");
+        glfwSwapInterval(0);
+    //    wprintf(L"LEFT BUTTON DOWN\n");
     }
     if(MOUSESTATS.isMiddleMouseDown)
     {
-        wprintf(L"MIDDLE BUTTON DOWN\n");
+        glfwSwapInterval(0);
+     //   wprintf(L"MIDDLE BUTTON DOWN\n");
     }
     if(MOUSESTATS.isRightMouseDown)
     {
-        wprintf(L"RIGHT BUTTON DOWN\n");
+        glfwSwapInterval(0);
+    //    wprintf(L"RIGHT BUTTON DOWN\n");
     }
 
     if(MOUSESTATS.isLeftMouseReleased)
     {
-        wprintf(L"LEFT BUTTON RELEASED\n");
+        glfwSwapInterval(1);
+     //   wprintf(L"LEFT BUTTON RELEASED\n");
         zeroMouseLeftReleased();
     }
     if(MOUSESTATS.isMiddleMouseReleased)
     {
-        wprintf(L"MIDDLE BUTTON RELEASED\n");
+        glfwSwapInterval(1);
+     //   wprintf(L"MIDDLE BUTTON RELEASED\n");
         zeroMouseMiddleReleased();
     }
     if(MOUSESTATS.isRightMouseReleased)
     {
-        wprintf(L"RIGHT BUTTON RELEASED\n");
+        glfwSwapInterval(1);
+     //   wprintf(L"RIGHT BUTTON RELEASED\n");
         zeroMouseRightReleased();
     }
 
@@ -259,7 +267,6 @@ int createWindow(const char* title, int width, int height)
     utime = glGetUniformLocation(programID, "iTime");
     umouse = glGetUniformLocation(programID, "iMouse");
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glfwSwapBuffers(win->window);
     timer = glfwGetTime();
     glfwSwapInterval(1);
@@ -275,11 +282,13 @@ int isClosed()
 void updateWindow()
 {
     useShader(programID);
-    glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
     timer = glfwGetTime();
-    glUniform1f(utime, timer);
+
+    glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
+    glUniform1f(utime, timer);                         // Hack it together first, worry about the little things later.
     glUniform4f(umouse, MOUSESTATS.xpos, MOUSESTATS.ypos, MOUSESTATS.isLeftMouseDown, MOUSESTATS.isMiddleMouseDown);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
     glfwSwapBuffers(win->window);
     glfwPollEvents();
 }
