@@ -12,12 +12,12 @@ unsigned int VAO;
 int uresolution;
 int utime;
 int umouse;
+int noderect;
 double timer;
 
 struct _RECT         // TODO : Verify if this is where this belongs
 {
-    int x, y;
-    int width, height;
+    float x, y, w, h;
 };
 
 struct _RECT* RECT;
@@ -150,6 +150,7 @@ void setHeight(int height)
     win->height = height;
 }
 
+float rX = 0.0f, rY = 0.0f;
 void processInput() // TODO : Put this function into the correct spot for the flurpscore.h
 {
     if(glfwGetKey(win->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -159,11 +160,16 @@ void processInput() // TODO : Put this function into the correct spot for the fl
 
     if(isMouseMoved() && MOUSESTATS.isLeftMouseDown)
     {
-        wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
+     //   wprintf(L"X: %d / Y: %d\n", MOUSESTATS.xpos, MOUSESTATS.ypos);
     }
 
     if(MOUSESTATS.isLeftMouseDown)
     {
+        if(rX == 0)
+        {
+            rX = (float)MOUSESTATS.xpos - RECT->x;
+            rY = (float)MOUSESTATS.ypos - RECT->y;
+        }
         glfwSwapInterval(0);
     //    wprintf(L"LEFT BUTTON DOWN\n");
     }
@@ -180,6 +186,7 @@ void processInput() // TODO : Put this function into the correct spot for the fl
 
     if(MOUSESTATS.isLeftMouseReleased)
     {
+        rX = 0;
         glfwSwapInterval(1);
      //   wprintf(L"LEFT BUTTON RELEASED\n");
         zeroMouseLeftReleased();
@@ -217,6 +224,12 @@ int createWindow(const char* title, int width, int height)
     win = malloc(sizeof(struct _WINDOW));
     win->width = width;
     win->height = height;
+
+    RECT = malloc(sizeof(struct _RECT));
+    RECT->x = 400.f;
+    RECT->y = 200.f;
+    RECT->w = 150.f;
+    RECT->h = 100.f;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -263,9 +276,10 @@ int createWindow(const char* title, int width, int height)
     glGenVertexArrays(1, &VAO); // Wrong spot for the GL stuff
     glBindVertexArray(VAO);
 
-    uresolution = glGetUniformLocation(programID, "iResolution");
-    utime = glGetUniformLocation(programID, "iTime");
-    umouse = glGetUniformLocation(programID, "iMouse");
+//    uresolution = glGetUniformLocation(programID, "iResolution");
+//    utime = glGetUniformLocation(programID, "iTime");
+//    umouse = glGetUniformLocation(programID, "iMouse");
+    noderect = glGetUniformLocation(programID, "iNodeRect");
 
     glfwSwapBuffers(win->window);
     timer = glfwGetTime();
@@ -281,12 +295,21 @@ int isClosed()
 
 void updateWindow()
 {
-    useShader(programID);
     timer = glfwGetTime();
-
-    glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
-    glUniform1f(utime, timer);                         // Hack it together first, worry about the little things later.
-    glUniform4f(umouse, MOUSESTATS.xpos, MOUSESTATS.ypos, MOUSESTATS.isLeftMouseDown, MOUSESTATS.isMiddleMouseDown);
+    useShader(programID);
+    if(MOUSESTATS.isLeftMouseDown)
+    {
+        RECT->x = (float)MOUSESTATS.xpos - rX;
+        RECT->y = (float)MOUSESTATS.ypos - rY;
+        if(RECT->x < RECT->w){RECT->x = RECT->w;}
+        if(RECT->y < RECT->h){RECT->y = RECT->h;}
+        if(RECT->x > win->width){RECT->x = (win->width - RECT->w);}
+        if(RECT->y > win->height){RECT->y = (win->height - RECT->h);}
+    }
+ //   glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
+ //   glUniform1f(utime, timer);                         // Hack it together first, worry about the little things later.
+ //   glUniform4f(umouse, MOUSESTATS.xpos, MOUSESTATS.ypos, MOUSESTATS.isLeftMouseDown, MOUSESTATS.isMiddleMouseDown);
+    glUniform4f(noderect, RECT->x, RECT->y, RECT->w, RECT->h);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     glfwSwapBuffers(win->window);
@@ -296,6 +319,7 @@ void updateWindow()
 void closeWindow()
 {
     if(programID > 0){ShaderCleanUp(programID); logs("INFO : Shader cleaned up successfully.");}
+    if(RECT){free(RECT);};
     if(win){free(win);};
     glfwTerminate();
     logs("INFO : Program terminated successfully.");
