@@ -1,32 +1,13 @@
 
 #include "flurpscore.h"
-#include "ogl.h"
 #include <GLFW/glfw3.h>
 
 #include "logging.h"
 #include <stdlib.h>  // malloc()   free()
 
- // Although these are local, they will need to be put into their own struct.
-unsigned int programID;
-unsigned int VAO;
-int uresolution;
-int utime;
-int umouse;
-int noderect;
-double timer;
-
-struct _RECT         // TODO : Verify if this is where this belongs
-{
-    float x, y, w, h;
-};
-
-struct _RECT* RECT;
-
-struct _WINDOW
-{
-    GLFWwindow* window;
-    int width, height;
-};
+float rX = 0.0f, rY = 0.0f;
+float resizeX = 0.0f;
+float resizeY = 0.0f;
 
 struct _MSTATS {
     int xpos;
@@ -41,7 +22,21 @@ struct _MSTATS {
     int wheelState;
 } MOUSESTATS;
 
+struct _WINDOW
+{
+    GLFWwindow* window;
+    int width, height;
+};
+
 struct _WINDOW* win;
+
+int vSync = 1;
+
+void setVSync(int v)
+{
+    vSync = v;
+    glfwSwapInterval(vSync);
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -49,8 +44,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     win->width = width;
     win->height = height;
     setGLViewport(win->width, win->height);
+    drawMainScreen(resizeX, resizeY);  // Draw targetted buffer image to main buffer
     updateWindow();
-    glfwSwapInterval(1);
+    glfwSwapInterval(vSync);
+}
+
+int getIsMouseDown()
+{
+    return MOUSESTATS.isLeftMouseDown;
+}
+
+float getRX()
+{
+    return rX;
+}
+
+float getRY()
+{
+    return rY;
 }
 
 int isMouseMoved()
@@ -140,19 +151,21 @@ int getHeight()
     return win->height;
 }
 
-void setWidth(int width)
+int getMousePosX()
 {
-    win->width = width;
+    return MOUSESTATS.xpos;
 }
 
-void setHeight(int height)
+int getMousePosY()
 {
-    win->height = height;
+    return MOUSESTATS.ypos;
 }
 
-float rX = 0.0f, rY = 0.0f;
-void processInput() // TODO : Put this function into the correct spot for the flurpscore.h
+void processInput(float fvX, float fvY)
 {
+    resizeX = fvX;
+    resizeY = fvY;
+
     if(glfwGetKey(win->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(win->window, 1);
@@ -167,8 +180,8 @@ void processInput() // TODO : Put this function into the correct spot for the fl
     {
         if(rX == 0)
         {
-            rX = (float)MOUSESTATS.xpos - RECT->x;
-            rY = (float)MOUSESTATS.ypos - RECT->y;
+            rX = (float)MOUSESTATS.xpos - fvX;
+            rY = (float)MOUSESTATS.ypos - fvY;
         }
         glfwSwapInterval(0);
     //    wprintf(L"LEFT BUTTON DOWN\n");
@@ -187,19 +200,19 @@ void processInput() // TODO : Put this function into the correct spot for the fl
     if(MOUSESTATS.isLeftMouseReleased)
     {
         rX = 0;
-        glfwSwapInterval(1);
+        glfwSwapInterval(vSync);
      //   wprintf(L"LEFT BUTTON RELEASED\n");
         zeroMouseLeftReleased();
     }
     if(MOUSESTATS.isMiddleMouseReleased)
     {
-        glfwSwapInterval(1);
+        glfwSwapInterval(vSync);
      //   wprintf(L"MIDDLE BUTTON RELEASED\n");
         zeroMouseMiddleReleased();
     }
     if(MOUSESTATS.isRightMouseReleased)
     {
-        glfwSwapInterval(1);
+        glfwSwapInterval(vSync);
      //   wprintf(L"RIGHT BUTTON RELEASED\n");
         zeroMouseRightReleased();
     }
@@ -224,12 +237,6 @@ int createWindow(const char* title, int width, int height)
     win = malloc(sizeof(struct _WINDOW));
     win->width = width;
     win->height = height;
-
-    RECT = malloc(sizeof(struct _RECT));
-    RECT->x = 400.f;
-    RECT->y = 200.f;
-    RECT->w = 150.f;
-    RECT->h = 100.f;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -259,32 +266,9 @@ int createWindow(const char* title, int width, int height)
 	glfwSetMouseButtonCallback(win->window, mouse_button_callback);
 	glfwSetScrollCallback(win->window, scroll_callback);
 
-	programID = initMainShaders();
-	if(programID == 0)
-    {
-	    logs("ERROR : Failed to initialize shaders !");
-        closeWindow();
-        return -1;
-    }
-
-    if(VAO) // FIX THIS LATER
-    {
-        glDeleteVertexArrays(1, &VAO);
-        ShaderCleanUp(programID);
-    }
-
-    glGenVertexArrays(1, &VAO); // Wrong spot for the GL stuff
-    glBindVertexArray(VAO);
-
-//    uresolution = glGetUniformLocation(programID, "iResolution");
-//    utime = glGetUniformLocation(programID, "iTime");
-//    umouse = glGetUniformLocation(programID, "iMouse");
-    noderect = glGetUniformLocation(programID, "iNodeRect");
-
-    glfwSwapBuffers(win->window);
-    timer = glfwGetTime();
-    glfwSwapInterval(1);
-
+	installShaders();
+    generateObjects();
+    glfwSwapInterval(vSync);
 	return 1;
 }
 
@@ -295,31 +279,14 @@ int isClosed()
 
 void updateWindow()
 {
-    timer = glfwGetTime();
-    useShader(programID);
-    if(MOUSESTATS.isLeftMouseDown)
-    {
-        RECT->x = (float)MOUSESTATS.xpos - rX;
-        RECT->y = (float)MOUSESTATS.ypos - rY;
-        if(RECT->x < RECT->w){RECT->x = RECT->w;}
-        if(RECT->y < RECT->h){RECT->y = RECT->h;}
-        if(RECT->x > win->width){RECT->x = (win->width - RECT->w);}
-        if(RECT->y > win->height){RECT->y = (win->height - RECT->h);}
-    }
- //   glUniform2f(uresolution, win->width, win->height); // Wrong spot for the GL stuff
- //   glUniform1f(utime, timer);                         // Hack it together first, worry about the little things later.
- //   glUniform4f(umouse, MOUSESTATS.xpos, MOUSESTATS.ypos, MOUSESTATS.isLeftMouseDown, MOUSESTATS.isMiddleMouseDown);
-    glUniform4f(noderect, RECT->x, RECT->y, RECT->w, RECT->h);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
     glfwSwapBuffers(win->window);
     glfwPollEvents();
 }
 
 void closeWindow()
 {
-    if(programID > 0){ShaderCleanUp(programID); logs("INFO : Shader cleaned up successfully.");}
-    if(RECT){free(RECT);};
+    shaderCleanUp();
+    cleanupOjects();
     if(win){free(win);};
     glfwTerminate();
     logs("INFO : Program terminated successfully.");

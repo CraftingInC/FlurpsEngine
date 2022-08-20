@@ -2,35 +2,36 @@
 #define _PLATFORM_H_
 
 #include <cglm/cglm.h> // TODO : Find a better spot for this.
-
 #include "fonts.h"     // TODO : Find a better spot for this.
+#include "images.h"    // TODO : Find a better spot for this.
+#include "ogl.h"
 
-void setBackgroundColor(float red, float green, float blue);
+float getRX(void);
+float getRY(void);
+int getMousePosX(void);
+int getMousePosY(void);
+int getIsMouseDown(void);
+
+void setMainClearscreenColor(float mred, float mgreen, float mblue);
+void setTextureClearscreenColor(float tred, float tgreen, float tblue, float talpha);
 void showGLLoggingVersion(void);
-void clearScreen(void);
+void enableBlending(void);
+void setVSync(int v);
 
-// TODO : Find a better place for shaders.
-unsigned int initMainShaders();
-void useShader(unsigned int programID);
-int loadShaderFromFile(const char* fileName, int shaderType);
-void ShaderCleanUp(unsigned int programID);
+int  getWidth(void);
+int  getHeight(void);
 
-int getWidth(void);
-int getHeight(void);
-void setWidth(int width);
-void setHeight(int hidth);
-
-int isMouseMoved(void);
+int  isMouseMoved(void);
 void setMouseMovedFalse(void);
 void zeroMouseLeftReleased(void);
 void zeroMouseMiddleReleased(void);
 void zeroMouseRightReleased(void);
 
-int createWindow(const char* title, int width, int height);
-int isClosed(void);
+int  createWindow(const char* title, int width, int height);
+int  isClosed(void);
 void clearScreen(void);
-void updateWindow(void);
+void updateWindow();
 void closeWindow(void);
-void processInput(void);
+void processInput(float fvX, float fvY);
 
 #endif // _PLATFORM_H_
