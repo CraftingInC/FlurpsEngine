@@ -1,7 +1,5 @@
 # Flurps Engine written in C from scratch.
   
-ANNOUNCEMENT : Do to my kidneys on the verge of kidney failure, especially with this pain I am in, I am unable to continue with this project.
-  
 This setup is for Windows builds. 
   
 Currently only proven to work on Windows 10. 
