@@ -1,6 +1,6 @@
 # Flurps Engine written in C from scratch.
   
-This setup is for Windows builds. 
+This setup is for Windows builds. However, can be adjust / adapted for Linux.  
   
 Currently only proven to work on Windows 10. 
   
