@@ -138,20 +138,20 @@ unsigned int initShaders(const char* vert, const char* frag)
     if(!success)
     {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        logs("ERROR : SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+        logging("ERROR : SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
         return 0;
     } else {
-        logs("INFO : VERTEX Shader created");
+        logging("INFO : VERTEX Shader created");
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &frag, NULL);
         glCompileShader(fragmentShader);
         if (!success)
         {
             glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            logs("ERROR : SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+            logging("ERROR : SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
             return 0;
         } else {
-            logs("INFO : FRAGMENT Shader created");
+            logging("INFO : FRAGMENT Shader created");
             unsigned int programID = glCreateProgram();
             glAttachShader(programID, vertexShader);
             glAttachShader(programID, fragmentShader);
@@ -191,7 +191,7 @@ int loadShaderFromFile(const char* fileName, int shaderType)
         char* shader = (char*)malloc(TOTAL_SIZE + 1);
         if(fread(shader, 1, TOTAL_SIZE, shaderSource) <= 0)
         {
-            logs("ERROR : Unable to fread shader");
+            logging("ERROR : Unable to fread shader");
         }
         shader[TOTAL_SIZE] = 0;
         fclose(shaderSource);
@@ -208,14 +208,14 @@ int loadShaderFromFile(const char* fileName, int shaderType)
             GLsizei logLength;
             GLchar  log[1024];
             glGetShaderInfoLog(shaderID, sizeof(log), &logLength, log);
-            logs("ERROR: %s -->   %s", fileName, log);
+            logging("ERROR: %s -->   %s", fileName, log);
 
         } else {
             free(shader);
             return shaderID;
         }
 	} else {
-		logs("ERROR : Unable to open shader file : %s", fileName);
+		logging("ERROR : Unable to open shader file : %s", fileName);
 	}
     return -1;
 }
@@ -228,15 +228,15 @@ void checkCompileErrors(unsigned int shader)
     if (!success)
     {
         glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-        logs("ERROR::PROGRAM_LINKING_ERROR of type: PROGRAM\n%s\n"
+        logging("ERROR::PROGRAM_LINKING_ERROR of type: PROGRAM\n%s\n"
                " -- --------------------------------------------------- -- ", infoLog);
     }
 }
 
 void shaderCleanUp()
 {
-    if(shaderTextureProgramID){glDeleteProgram(shaderTextureProgramID); logs("INFO : Texture Shader cleaned up successfully.");}
-    if(shaderMainProgramID){glDeleteProgram(shaderMainProgramID); logs("INFO : Main Shader cleaned up successfully.");}
-    if(shaderNodeProgramID){glDeleteProgram(shaderNodeProgramID); logs("INFO : Node Shader cleaned up successfully.");}
+    if(shaderTextureProgramID){glDeleteProgram(shaderTextureProgramID); logging("INFO : Texture Shader cleaned up successfully.");}
+    if(shaderMainProgramID){glDeleteProgram(shaderMainProgramID); logging("INFO : Main Shader cleaned up successfully.");}
+    if(shaderNodeProgramID){glDeleteProgram(shaderNodeProgramID); logging("INFO : Node Shader cleaned up successfully.");}
 }
 

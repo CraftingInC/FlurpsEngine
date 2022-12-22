@@ -2,7 +2,6 @@
 #define _PLATFORM_H_
 
 #include <cglm/cglm.h> // TODO : Find a better spot for this.
-#include "fonts.h"     // TODO : Find a better spot for this.
 #include "images.h"    // TODO : Find a better spot for this.
 #include "ogl.h"
 

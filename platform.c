@@ -2,6 +2,7 @@
 #include "flurpscore.h"
 #include <GLFW/glfw3.h>
 
+#define LOGGER_IMPLEMENTATION
 #include "logging.h"
 #include <stdlib.h>  // malloc()   free()
 
@@ -230,7 +231,7 @@ void processInput(float fvX, float fvY)
 
 int createWindow(const char* title, int width, int height)
 {
-    logs("INFO : Initializing GLFW3 and Creating Window ...");
+    logging("INFO : Initializing GLFW3 and Creating Window ...");
     if (!glfwInit())
         return -1;
 
@@ -249,12 +250,12 @@ int createWindow(const char* title, int width, int height)
         return -1;
     }
 
-    logs("INFO : Window Created.");
+    logging("INFO : Window Created.");
 
     glfwMakeContextCurrent(win->window);
     if(!initGLAD())
     {
-	    logs("ERROR : Failed to initialize OpenGL context !");
+	    logging("ERROR : Failed to initialize OpenGL context !");
         closeWindow();
         return -1;
 	}
@@ -289,5 +290,5 @@ void closeWindow()
     cleanupOjects();
     if(win){free(win);};
     glfwTerminate();
-    logs("INFO : Program terminated successfully.");
+    logging("INFO : Program terminated successfully.");
 }

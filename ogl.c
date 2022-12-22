@@ -1,6 +1,4 @@
 
-/* Game Title : The Cyclopean Exchange */
-
 #include "ogl.h"
 #include "logging.h"
 #include "flurpscore.h"
@@ -58,7 +56,7 @@ unsigned int createImage()
     } else {
         textureImageWidth  = mImage.width;
         textureImageHeight = mImage.height;
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+     //   glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureImageWidth, textureImageHeight, 0,  GL_BGRA, GL_UNSIGNED_BYTE, mImage.pixels);
@@ -154,8 +152,8 @@ void setGLViewport(int width, int height)
 
 void showGLLoggingVersion()
 {
-	logs("INFO : GLAD --> OpenGL Working.");
-	logs("INFO : OpenGL Version : %s", glGetString(GL_VERSION));
+	logging("INFO : GLAD --> OpenGL Working.");
+	logging("INFO : OpenGL Version : %s", glGetString(GL_VERSION));
 }
 
 

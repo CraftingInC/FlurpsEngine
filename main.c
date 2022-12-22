@@ -9,11 +9,11 @@ struct _vec2
 
 int main(void)
 {
-    if(createWindow("Flurps Graphics Engine - Testing Prototype", 1200, 720) == 1)
+    if(createWindow("Flurps Graphics Engine - Testing Prototype", 1280, 720) == 1)
     {
         setVSync(1);
         setMainClearscreenColor(0.1f, 0.1f, 0.1f);    // Set main clear screen color
-        setTextureClearscreenColor(0.1f, 0.3f, 0.1f, 1.0); // Set texture clear screen color
+        setTextureClearscreenColor(0.1f, 0.1f, 0.9f, 1.0); // Set texture clear screen color
         setTextureColors(1.0f, 1.0f, 1.0f, 1.0f);
         setMainRectColor(1.0f, 1.0f, 1.0f, 1.0f);
         enableBlending();
