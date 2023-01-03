@@ -1,11 +1,11 @@
 #ifndef _OGL_H_
 #define _OGL_H_
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "images.h"
 
-int initGLAD(void);
+void initGLAD(void);
 void setGLViewport(int width, int height);
 void generateObjects(void);
 void drawTextureScreen(void);

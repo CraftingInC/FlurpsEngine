@@ -253,12 +253,7 @@ int createWindow(const char* title, int width, int height)
     logging("INFO : Window Created.");
 
     glfwMakeContextCurrent(win->window);
-    if(!initGLAD())
-    {
-	    logging("ERROR : Failed to initialize OpenGL context !");
-        closeWindow();
-        return -1;
-	}
+    initGLAD();
 
 	showGLLoggingVersion();
 

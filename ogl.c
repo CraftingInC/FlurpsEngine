@@ -140,9 +140,9 @@ void generateObjects()
     glGenVertexArrays(1, &VAO1);
 }
 
-int initGLAD()
+void initGLAD()
 {
-	return gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	gladLoaderLoadGL();
 }
 
 void setGLViewport(int width, int height)
