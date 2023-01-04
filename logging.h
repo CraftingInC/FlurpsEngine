@@ -18,10 +18,10 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include <stdio.h>   // FILE  fopen()   fclose()  fprintf()   sprintf()
+#include <stdio.h>   // FILE  fopen()   fclose()  fprintf()   vsprintf()
 #include <string.h>  // strcpy()   strcat()
 #include <stdlib.h>  // malloc()   free()
-#include <stdarg.h>  // va_start    va_end   va_list    va_arg
+#include <stdarg.h>  // va_start    va_end   va_arg    (__builtin_va_list is built into compiler)
 #include <time.h>    // time()   localtime()   tzset()   strftime()
 #include <errno.h>   // errno
 
@@ -37,10 +37,10 @@ void tzset(void);      // Added for linux
 
 void _logging(const char* fmt, ...)
 {
-    va_list ap;
+    __builtin_va_list ap;    // gcc / clang
     va_start(ap, fmt);
     char destStr[1024] = {0};
-    sprintf(destStr, fmt, va_arg(ap, char*));
+    vsprintf(destStr, fmt, ap);
     va_end(ap);
 
     char datestr[51];
